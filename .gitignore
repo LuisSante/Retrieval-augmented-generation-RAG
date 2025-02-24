@@ -32,6 +32,11 @@ MANIFEST
 *.manifest
 *.spec
 
+pdf/
+database/
+chromadb/
+/chromadb
+
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt

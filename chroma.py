@@ -22,7 +22,7 @@ import shutil  # Importing shutil module for high-level file operations
 
 # Directory to your pdf files:
 DATA_PATH = "./pdf/"
-OPENAI_API_KEY = ""
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 def load_documents():
     """
@@ -46,7 +46,7 @@ def split_text(documents: list[Document]):
     """
 
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=300,  # Size of each chunk in characters
+        chunk_size=500,  # Size of each chunk in characters
         chunk_overlap=100,  # Overlap between consecutive chunks
         length_function=len,  # Function to compute the length of the text
         add_start_index=True,  # Flag to add start index to each chunk
@@ -58,8 +58,8 @@ def split_text(documents: list[Document]):
 
     # Print example of page content and metadata for a chunk
     document = chunks[0]
-    print(document.page_content)
-    print(document.metadata)
+    # print(document.page_content)
+    # print(document.metadata)
 
     return chunks  # Return the list of split text chunks
 
@@ -84,6 +84,7 @@ def save_to_chroma(chunks: list[Document]):
     db = Chroma.from_documents(
         chunks,
         OpenAIEmbeddings(
+            model="text-embedding-ada-002",
             openai_api_key=OPENAI_API_KEY),
         persist_directory=CHROMA_PATH
     )
@@ -103,14 +104,28 @@ def generate_data_store():
 
 # generate_data_store()
 
-
-query = "que es el bus en una interconexion de memoria compartida"
-
 PROMPT_TEMPLATE = """
-Answer the question based only on the following context:
-{context}
- - -
-Answer the question based on the above context: {question}
+Você é um assistente jurídico altamente especializado.  
+Responda estritamente com base no seguinte contexto extraído dos documentos:  
+
+### 📌 **Contexto Fornecido:**
+{context}  
+
+---
+
+Agora, responda à seguinte pergunta de forma objetiva, clara e fundamentada:  
+
+**🔹 Pergunta:** {question}  
+
+### 🔍 **Instruções:**  
+1 **Baseie-se exclusivamente no contexto fornecido.**  
+2 **Se a resposta não estiver no contexto, informe isso claramente.**  
+3 **Se houver múltiplos pontos relevantes, estruture a resposta em tópicos.**  
+4 **Use uma linguagem formal e precisa, como um parecer jurídico.**  
+
+---
+
+### 📝 **Resposta:**
 """
 
 
@@ -125,41 +140,46 @@ def query_rag(query_text):
     """
     # YOU MUST - Use same embedding function as before
     embedding_function = OpenAIEmbeddings(
-        openai_api_key=OPENAI_API_KEY)
+        model="text-embedding-ada-002",
+        openai_api_key=OPENAI_API_KEY
+    )
 
     # Prepare the database
     db = Chroma(persist_directory=CHROMA_PATH,
                 embedding_function=embedding_function)
 
     # Retrieving the context from the DB using similarity search
-    results = db.similarity_search_with_relevance_scores(query_text, k=3)
+    results = db.similarity_search_with_relevance_scores(query_text, k=5)
 
     # Check if there are any matching results or if the relevance score is too low
-    if len(results) == 0 or results[0][1] < 0.7:
+    print("RESULTS GENERAL: ", results)
+    print("RESULTS: ", results[0][1])
+    if len(results) == 0 or results[0][1] < 0.75:
         print(f"Unable to find matching results.")
 
     # Combine context from matching documents
     context_text = "\n\n - -\n\n".join(
-        [doc.page_content for doc, _score in results])
+        [doc.page_content for doc, _ in results])
 
     # Create prompt template using context and query text
     prompt_template = ChatPromptTemplate.from_template(PROMPT_TEMPLATE)
     prompt = prompt_template.format(context=context_text, question=query_text)
 
     # Initialize OpenAI chat model
-    model = ChatOpenAI(
+    model = ChatOpenAI( 
         openai_api_key=OPENAI_API_KEY)
 
     # Generate response text based on the prompt
-    response_text = model.predict(prompt)
+    #response_text = model.predict(prompt)
+    response_text = model.invoke(prompt)
 
     # Get sources of the matching documents
-    sources = [doc.metadata.get("source", None) for doc, _score in results]
+    sources = [doc.metadata.get("source", None) for doc, _ in results]
 
     formatted_response = f"Response: {response_text}\nSources: {sources}"
     return formatted_response, response_text
 
-
+query = "Qual é o contexto da ação ordinária que levou ao recurso extraordinário da União?"
 generate_data_store()
 formatted_response, response_text = query_rag(query)
 print(response_text)
