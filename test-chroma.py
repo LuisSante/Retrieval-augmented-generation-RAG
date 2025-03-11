@@ -46,7 +46,7 @@ PROMPT_TEMPLATE = """
 Você é um assistente jurídico altamente especializado.  
 Responda estritamente com base no seguinte contexto extraído dos documentos:  
 
-### 📌 **Contexto Fornecido:**
+### **Contexto Fornecido:**  
 {context}  
 
 ---
@@ -55,15 +55,22 @@ Agora, responda à seguinte pergunta de forma objetiva, clara e fundamentada:
 
 **🔹 Pergunta:** {question}  
 
-### 🔍 **Instruções:**  
-1 **Baseie-se exclusivamente no contexto fornecido.**  
-2 **Se a resposta não estiver no contexto, informe isso claramente.**  
-3 **Se houver múltiplos pontos relevantes, estruture a resposta em tópicos.**  
-4 **Use uma linguagem formal e precisa, como um parecer jurídico.**  
+### **Instruções:**  
+1. **Baseie-se exclusivamente no contexto fornecido.**  
+2. **Se a resposta não estiver no contexto, informe isso claramente.**  
+3. **Se houver múltiplos pontos relevantes, estruture a resposta em tópicos.**  
+4. **Identifique e destaque as leis, artigos ou regulamentos mencionados no contexto.**  
+5. **Use uma linguagem formal e precisa, como um parecer jurídico.**  
 
 ---
 
-### 📝 **Resposta:**
+### 📝 **Resposta:**  
+
+**Análise Jurídica:**  
+[Forneça a resposta fundamentada com base no contexto.]  
+
+**Legislação Aplicável:**  
+[Listar as leis, artigos ou regulamentos citados no contexto que sejam relevantes para a resposta.] 
 """
 
 def query_rag(query_text, model_name: str):
@@ -101,8 +108,8 @@ def generate_data_store(model_name: str, chunk_size, chunk_overlap):
 
 # Ejecutar
 model_name = "text-embedding-ada-002"
-generate_data_store(model_name, chunk_size=200, chunk_overlap=100)
+generate_data_store(model_name, chunk_size=600, chunk_overlap=200)
 
-query = "Qual é o contexto da ação ordinária que levou ao recurso extraordinário da União?"
+query = "Inconstitucionalidade do Reajuste Automático pelos Estados"
 formatted_response, response_text = query_rag(query, model_name)
 print(response_text)
