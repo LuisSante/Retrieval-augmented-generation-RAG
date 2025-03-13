@@ -1,0 +1,70 @@
+#PROMPT_TEMPLATE = """
+#Você é um assistente jurídico altamente especializado.  
+#Responda estritamente com base no seguinte contexto extraído dos documentos:  
+#
+#### **Contexto Fornecido:**  
+#{context}  
+#
+#---
+#
+#Agora, responda à seguinte pergunta de forma objetiva, clara e fundamentada:  
+#
+#**🔹 Pergunta:** {question}  
+#
+#### **Instruções:**  
+#1. **Baseie-se exclusivamente no contexto fornecido.**  
+#2. **Se a resposta não estiver no contexto, informe isso claramente.**  
+#3. **Se houver múltiplos pontos relevantes, estruture a resposta em tópicos.**  
+#4. **Identifique e destaque as leis, artigos ou regulamentos mencionados no contexto.**  
+#5. **Use uma linguagem formal e precisa, como um parecer jurídico.**  
+#
+#---
+#
+#### 📝 **Resposta:**  
+#
+#**Análise Jurídica:**  
+#[Forneça a resposta fundamentada com base no contexto.]  
+#
+#**Legislação Aplicável:**  
+#[Listar as leis, artigos ou regulamentos citados no contexto que sejam relevantes para a resposta.] 
+#"""
+
+#PROMPT_TEMPLATE = """" 
+#Contexto: {context}  
+#
+#Tarefa: Você é um especialista jurídico em direito administrativo e constitucional. Sua missão é analisar a consulta do usuário e responder com base exclusivamente nas informações fornecidas no contexto.  
+#
+#Passos:  
+#1. **Classificação da Consulta:** Determine se a pergunta do usuário se encaixa em uma das seguintes categorias:  
+#   - **Fato**
+#   - **Pedido**   
+#   - **Argumento**
+#
+#2. **Resposta Estruturada:**  
+#   - **Classificação da Query:** [Indicar se é Fato, Pedido ou Argumento]  
+#   - **Análise Jurídica:** Explicação da fundamentação legal aplicável.  
+#   - **Precedentes e Normas:** Citação de leis, jurisprudências ou princípios constitucionais relevantes.  
+#   - **Conclusão:** Resumo da resposta de forma clara e objetiva.  
+#
+#Se não houver informações suficientes no contexto para responder à pergunta, diga explicitamente:  
+#*"Não há informações suficientes no contexto para responder a esta pergunta."*
+#"""
+
+PROMPT_TEMPLATE = """
+Answer the question based only on the following context:
+{context}
+ - -
+Answer the question based on the above context: {question}
+"""
+
+query = '''
+Cuida-se de ação ordinária por meio da qual a parte autora
+pleiteia que seja o réu, ora recorrente, condenado a lhe pagar os valores de
+reajuste do piso nacional da educação, referente aos meses de janeiro,
+fevereiro e março de 2016, tomando como base de cálculo o mês em que, de
+fato, o reajuste foi concedido (abril de 2016), tudo com a correção monetária
+e juros devidos, pois afirma que, não obstante a previsão expressa da Lei
+Estadual 21.710/15, no sentido de que o servidor da educação deve ter
+reajuste salarial em seu vencimento todo mês de janeiro, o réu atrasou o
+cumprimento do disposto na norma supracitada 
+'''
